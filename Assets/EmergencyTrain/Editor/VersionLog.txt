@@ -1,0 +1,8 @@
+20170821
+完成InitConfig的功能。在Unity5.2下完成测试。
+
+20170824
+针对Unity5.6报错的情况作修改，完成Unity5.2下和Unity5.6下的测试。
+1.增加OnEnable函数，将InitConfig类对象的初始化移到OnEnable中. 因为在5.6里很多东西不能在EditorWindow类的构造函数里调用。
+2.增加IInitConfig类作为调用入口.原因同上。
+3.添加清理注册表的两个菜单项。
