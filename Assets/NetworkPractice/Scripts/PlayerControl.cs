@@ -130,10 +130,9 @@ public class PlayerControl : NetworkBehaviour {
 	{
 		curCarrier = carrier;
 		carrier.driver = gameObject;
+		transform.rotation = carrier.transform.rotation;	// 先转，再改层级关系。否则会发生变形。
 		transform.parent = carrier.transform;
 		transform.localPosition = carrier.seat;
-		transform.localRotation = Quaternion.identity;
-		// transform.localScale = new Vector3(1/carrier.transform.localScale)
 	}
 
 	[Command]
@@ -156,10 +155,12 @@ public class PlayerControl : NetworkBehaviour {
 		transform.parent =null;
 		transform.position += curCarrier.getOffPos;
 		curCarrier = null;
+		/*
 		if(isServer)
 		{
 			transform.localScale = Vector3.one;
 		}
+		*/
 	}
 /*
 	[Command]
