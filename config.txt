@@ -1,0 +1,7 @@
+{
+	"NetConfig":
+	{
+		"isClient":true,
+		"IP":"192.168.93.80"
+	}
+}

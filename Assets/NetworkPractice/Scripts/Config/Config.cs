@@ -21,14 +21,13 @@ public class Config : MonoBehaviour {
 			if(_instance==null)
 			{
 				_instance = FindObjectOfType<Config>();
+				if(_instance!=null)
+				{
+					_instance.Init();
+				}
 			}
 			return _instance;
 		}
-	}
-	// Use this for initialization
-	void Awake () {
-		jsonStr = ReadJsonFile(jsonPath);
-		jsonRoot = new JSONObject(jsonStr);
 	}
 
 	public string ReadJsonFile(string path)
@@ -58,11 +57,21 @@ public class Config : MonoBehaviour {
 		return jo;
 	}
 
+	void Init()
+	{
+		jsonStr = ReadJsonFile(jsonPath);
+		jsonRoot = new JSONObject(jsonStr);
+	}
+
 	void OnEnable()
 	{
 		if(_instance==null)
 		{
 			_instance = this;
+			if(!Initialized)
+			{
+				Init();
+			}
 		}
 		else if(_instance!=this)
 		{

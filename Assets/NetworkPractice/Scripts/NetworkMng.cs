@@ -11,6 +11,30 @@ public class NetworkMng : MonoBehaviour {
 		hud = GetComponent<NetworkManagerHUD>();
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = Cursor.lockState!=CursorLockMode.Locked;
+		Config config = Config.instance;
+		if(config!=null)
+		{
+			JSONObject joClient = config.GetJsonObj("NetConfig/isClient");
+			if(joClient!=null && joClient.IsBool)
+			{
+				NetworkManager net = NetworkManager.singleton;
+				if(joClient.b)
+				{
+					JSONObject joIP = config.GetJsonObj("NetConfig/IP");
+					if(joIP!=null && joIP.IsString)
+					{
+						net.networkAddress = joIP.str;
+						net.StartClient();
+						hud.showGUI = false;
+					}
+				}
+				else
+				{
+					net.StartHost();
+					hud.showGUI = false;
+				}
+			}
+		}
 	}
 	
 	// Update is called once per frame
