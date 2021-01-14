@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class MotorCycle : Carrier {
 	float turnRate = 30;
@@ -10,7 +10,7 @@ public class MotorCycle : Carrier {
 	float turnSpeed = 0;
 	float curRoll = 0;
 
-	public class InputInfo : MessageBase
+	public class InputInfo : NetworkMessage
 	{
 		public float inRun = 0;
 		public float inTurn = 0;
@@ -23,7 +23,7 @@ public class MotorCycle : Carrier {
 	{
 		get{return msgInput;}
 	}
-	public override MessageBase msgContent
+	public override NetworkMessage msgContent
 	{
 		get{return inInfo;}
 	}
@@ -77,9 +77,8 @@ public class MotorCycle : Carrier {
     	}
     }
 
-    void OnMsgInputInfo(NetworkMessage netMsg)
+    void OnMsgInputInfo(InputInfo msg)
     {
-    	InputInfo msg = netMsg.ReadMessage<InputInfo>();
     	inInfo = msg;
     }
 
@@ -88,13 +87,13 @@ public class MotorCycle : Carrier {
     {
     	if(!isServer)
     	{
-	    	NetworkManager.singleton.client.RegisterHandler(msgInput,OnMsgInputInfoClient);
+	    	NetworkClient.RegisterHandler(msgInput,OnMsgInputInfoClient);
     	}
     }
 */
     public override void OnStartServer()
     {
     	base.OnStartServer();
-    	NetworkServer.RegisterHandler(msgInput,OnMsgInputInfo);
+    	NetworkServer.RegisterHandler<InputInfo>(OnMsgInputInfo);
     }
 }

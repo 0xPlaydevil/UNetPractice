@@ -1,19 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class Moto : NetworkBehaviour {
 
-	public class MotoMember: MessageBase
+	public class MotoMember: NetworkMessage
 	{
 		public GameObject target = null;
 		public float curSpeed = 0;
 	}
 
 	public MotoMember members = new MotoMember();
-	public short motoMsg = MsgType.Highest + 1;
-	protected short motoMsgToClient = MsgType.Highest +2;
+	//public short motoMsg = MsgType.Highest + 1;
+	//protected short motoMsgToClient = MsgType.Highest +2;
 
 	void Start()
 	{
@@ -27,17 +27,15 @@ public class Moto : NetworkBehaviour {
 		transform.position = pos;
 	}
 
-	public void OnServerReceiveMembers(NetworkMessage msg)
+	public void OnServerReceiveMembers(MotoMember recMem)
 	{
-		MotoMember recMem = msg.ReadMessage<MotoMember>();
 		members = recMem;
-		NetworkServer.SendToAll(motoMsgToClient,recMem);
+		NetworkServer.SendToAll<MotoMember>(recMem);
 		Debug.Log("Server send to all");
 	}
 
-	public void OnClientReceiveMembers(NetworkMessage msg)
+	public void OnClientReceiveMembers(MotoMember recMem)
 	{
-		MotoMember recMem = msg.ReadMessage<MotoMember>();
 		members = recMem;
 	}
 
@@ -45,7 +43,7 @@ public class Moto : NetworkBehaviour {
 	public override void OnStartServer()
 	{
 		base.OnStartServer();
-		NetworkServer.RegisterHandler(motoMsg,OnServerReceiveMembers);
+		NetworkServer.RegisterHandler<MotoMember>(OnServerReceiveMembers);
 	}
 
 	public override void OnStartClient()
@@ -54,7 +52,7 @@ public class Moto : NetworkBehaviour {
 		if(!isServer)
 		{
 			base.OnStartClient();
-			NetworkManager.singleton.client.RegisterHandler(motoMsgToClient,OnClientReceiveMembers);
+			NetworkClient.RegisterHandler<MotoMember>(OnClientReceiveMembers);
 			Debug.Log("Register");
 		}
 	}

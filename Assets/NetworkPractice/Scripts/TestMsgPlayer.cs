@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class TestMsgPlayer : NetworkBehaviour {
 	public Moto moto = null;
@@ -17,7 +17,7 @@ public class TestMsgPlayer : NetworkBehaviour {
 		if(isLocalPlayer && Input.GetKeyUp(KeyCode.A))
 		{
 			moto.members.curSpeed += 2;
-			NetworkManager.singleton.client.Send(moto.motoMsg,moto.members);
+			NetworkClient.Send(moto.members);
 		}
 		if(Input.GetButtonUp("Jump"))
 		{

@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class Car : Carrier {
 	float turnRate = 30;
 
 	float turnSpeed = 0;
 
-	public class InputInfo : MessageBase
+	public class InputInfo : NetworkMessage
 	{
 		public float inRun = 0;
 		public float inTurn = 0;
@@ -21,7 +21,7 @@ public class Car : Carrier {
 	{
 		get{return msgInput;}
 	}
-	public override MessageBase msgContent
+	public override NetworkMessage msgContent
 	{
 		get{return inInfo;}
 	}
@@ -86,9 +86,8 @@ public class Car : Carrier {
     	}
     }
 
-    void OnMsgInputInfo(NetworkMessage netMsg)
+    void OnMsgInputInfo(InputInfo msg)
     {
-    	InputInfo msg = netMsg.ReadMessage<InputInfo>();
     	inInfo = msg;
     }
 
@@ -97,13 +96,13 @@ public class Car : Carrier {
     {
     	if(!isServer)
     	{
-	    	NetworkManager.singleton.client.RegisterHandler(msgInput,OnMsgInputInfoClient);
+	    	NetworkClient.RegisterHandler(msgInput,OnMsgInputInfoClient);
     	}
     }
 */
     public override void OnStartServer()
     {
     	base.OnStartServer();
-    	NetworkServer.RegisterHandler(msgInput,OnMsgInputInfo);
+    	NetworkServer.RegisterHandler<InputInfo>(OnMsgInputInfo);
     }
 }

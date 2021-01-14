@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class PlayerControl : NetworkBehaviour {
 	public GameObject bullet = null;
@@ -37,7 +37,7 @@ public class PlayerControl : NetworkBehaviour {
 			else
 			{
 				curCarrier.GetInput();
-				NetworkManager.singleton.client.Send(curCarrier.msgType,curCarrier.msgContent);
+				NetworkClient.Send(curCarrier.msgContent);
 				if(curCarrier.weaponFireBits !=0)
 				{
 					CmdCarrierFire(curCarrier.weaponFireBits);
