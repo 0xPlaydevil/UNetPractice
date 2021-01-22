@@ -37,7 +37,7 @@ public class MotorCycle : Carrier {
 	{
 
 	}
-	
+
 	public override void GetInput()
 	{
 		// 驾驶部分
@@ -47,6 +47,11 @@ public class MotorCycle : Carrier {
 		_weaponFireBits = 0;
 		// Todo:武器系统类型化，重用
 		_weaponFireBits |= Time.time%0.1f<0.02f&&Input.GetButton("Fire2")? 1u: 0u;
+	}
+
+	public override void PushInput()
+	{
+		NetworkClient.Send(inInfo);
 	}
 
 	public override void Run()
@@ -67,13 +72,13 @@ public class MotorCycle : Carrier {
     	inInfo.inTurn = Mathf.Lerp(inInfo.inTurn,0,0.3f);
     }
 
-    public override void Fire(uint fireBits)
+    public override void ServerFire(uint fireBits)
     {
     	if((fireBits &1u) ==1u)
     	{
     		// fire2
-    		NetworkServer.Spawn(PillManager.instance.Create(3,driver,new Vector3(-0.3f,0.3f,0)));
-    		NetworkServer.Spawn(PillManager.instance.Create(3,driver,new Vector3(0.3f,0.3f,0)));
+    		NetworkServer.Spawn(PillManager.instance.Create(3,driver.gameObject,new Vector3(-0.3f,0.3f,0)));
+    		NetworkServer.Spawn(PillManager.instance.Create(3,driver.gameObject, new Vector3(0.3f,0.3f,0)));
     	}
     }
 

@@ -34,15 +34,6 @@ public class PlayerControl : NetworkBehaviour {
 					CmdFire();				
 				}
 			}
-			else
-			{
-				curCarrier.GetInput();
-				NetworkClient.Send(curCarrier.msgContent);
-				if(curCarrier.weaponFireBits !=0)
-				{
-					CmdCarrierFire(curCarrier.weaponFireBits);
-				}
-			}
 			if(Input.GetKeyDown(KeyCode.F))
 			{
 				if(curCarrier)
@@ -51,26 +42,7 @@ public class PlayerControl : NetworkBehaviour {
 				}
 				else
 				{
-					Collider[] cols = Physics.OverlapSphere(transform.position,1);
-					List<Carrier> carriers = new List<Carrier>();
-					foreach(Collider col in cols)
-					{
-						Carrier carrier = col.GetComponent<Carrier>();
-						if(carrier!=null)
-						{
-							carriers.Add(carrier);
-						}
-					}
-					foreach(Carrier carrier in carriers)
-					{
-						// Todo:添加距离判断，上距离近的
-						// Todo:添加乘位判定
-						if(carrier.driver==null)
-						{
-							CmdGetOnCarrier(carrier.gameObject);
-							break;
-						}
-					}
+					CmdGetOnCarrier();
 				}
 			}
 		}
@@ -113,54 +85,93 @@ public class PlayerControl : NetworkBehaviour {
 	}
 
 	[Command]
-	public void CmdGetOnCarrier(GameObject carrierObj)
+	public void CmdGetOnCarrier()
 	{
-		RpcGetOnCarrier(carrierObj);
-		if(isServer && !isClient)
+		int seat = -1;
+		if(isServer)
 		{
-			GetOnCarrier(carrierObj.GetComponent<Carrier>());
+			Collider[] cols = Physics.OverlapSphere(transform.position, 1);
+			List<Carrier> carriers = new List<Carrier>();
+			foreach (Collider col in cols)
+			{
+				Carrier carrier = col.GetComponent<Carrier>();
+				if (carrier != null)
+				{
+					carriers.Add(carrier);
+				}
+			}
+			IEnumerator<Carrier> iter = carriers.GetEnumerator();
+			while(iter.MoveNext() && (seat=GetOnCarrier(iter.Current))<0) { }
+			//foreach (Carrier carrier in carriers)
+			//{
+			//	// Todo:添加距离判断，上距离近的
+			//	// Todo:添加乘位判定
+			//	seat = GetOnCarrier(carrier);
+			//	if (seat>=0)
+			//	{
+			//		break;
+			//	}
+			//}
+		}
+		if(seat>=0)
+		{
+			RpcGetOnCarrier(curCarrier.GetComponent<NetworkIdentity>().sceneId);
 		}
 	}
+	// RPC方法无法接受Carrier类型的参数，可能是无法接受复杂类型
 	[ClientRpc]
-	public void RpcGetOnCarrier(GameObject carrierObj)
+	public void RpcGetOnCarrier(ulong carrierId)
 	{
-		GetOnCarrier(carrierObj.GetComponent<Carrier>());
+		if(isClient && !isServer)
+		{
+			GetOnCarrier(NetworkIdentity.GetSceneIdentity(carrierId).gameObject.GetComponent<Carrier>());
+		}
 	}
-	public void GetOnCarrier(Carrier carrier)
+	public int GetOnCarrier(Carrier carrier)
 	{
-		curCarrier = carrier;
-		carrier.driver = gameObject;
-		transform.rotation = carrier.transform.rotation;	// 先转，再改层级关系。否则会发生变形。
-		transform.parent = carrier.transform;
-		transform.localPosition = carrier.seat;
+		int seat = carrier.AddPassenger(this);
+		if(seat>=0)
+		{
+			curCarrier = carrier;
+		}
+		return seat;
 	}
 
 	[Command]
 	public void CmdGetOffCarrier()
 	{
-		RpcGetOffCarrier();
-		if(isServer && !isClient)
+		print("CmdGetOffCarrier");
+		int seat = -1;
+		if(isServer)
 		{
-			GetOffCarrier();
+			seat=GetOffCarrier();
+		}
+		if(seat>=0)
+		{
+			RpcGetOffCarrier();
 		}
 	}
 	[ClientRpc]
 	public void RpcGetOffCarrier()
 	{
-		GetOffCarrier();
-	}
-	public void GetOffCarrier()
-	{
-		curCarrier.driver = null;
-		transform.parent =null;
-		transform.position += curCarrier.getOffPos;
-		curCarrier = null;
-		/*
-		if(isServer)
+		if(isClient && !isServer)
 		{
-			transform.localScale = Vector3.one;
+			GetOffCarrier();
 		}
-		*/
+	}
+	public int GetOffCarrier()
+	{
+		int seat = -1;
+		if(curCarrier)
+		{
+			seat= curCarrier.RemovePassenger(this);
+			if(seat>=0)
+			{
+				curCarrier = null;
+				return seat;
+			}
+		}
+		return -1;
 	}
 /*
 	[Command]
@@ -178,10 +189,4 @@ public class PlayerControl : NetworkBehaviour {
 		curCarrier.Run();
 	}
 */
-	[Command]
-	public void CmdCarrierFire(uint fireBits)
-	{
-		curCarrier.Fire(fireBits);
-	}
-
 }

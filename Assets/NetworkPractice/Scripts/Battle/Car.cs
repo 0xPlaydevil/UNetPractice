@@ -51,6 +51,11 @@ public class Car : Carrier {
 		_weaponFireBits |= Input.GetButtonUp("Fire3")? 1u: 0u;
 	}
 
+	public override void PushInput()
+	{
+		NetworkClient.Send(inInfo);
+	}
+
 	public override void Run()
     {
     	float curSpeed = inInfo.inRun*speed;
@@ -65,24 +70,24 @@ public class Car : Carrier {
     	inInfo.inTurn = Mathf.Lerp(inInfo.inTurn,0,0.3f);
     }
 
-    public override void Fire(uint fireBits)
+    public override void ServerFire(uint fireBits)
     {
     	if((fireBits &1u) ==1u)
     	{
     		// fire3
-    		NetworkServer.Spawn(PillManager.instance.Create(2,driver));
+    		NetworkServer.Spawn(PillManager.instance.Create(2,driver.gameObject));
     	}
     	fireBits >>= 1;
     	if((fireBits &1u) ==1u)
     	{
     		// fire2
-    		NetworkServer.Spawn(PillManager.instance.Create(1,driver));
+    		NetworkServer.Spawn(PillManager.instance.Create(1,driver.gameObject));
     	}
     	fireBits >>=1;
     	if((fireBits &1u) == 1u)
     	{
     		// fire1
-    		NetworkServer.Spawn(PillManager.instance.Create(0,driver));
+    		NetworkServer.Spawn(PillManager.instance.Create(0,driver.gameObject));
     	}
     }
 
