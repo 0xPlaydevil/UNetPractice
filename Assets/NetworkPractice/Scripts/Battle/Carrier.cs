@@ -122,8 +122,8 @@ public abstract class Carrier : NetworkBehaviour {
 		if(seat>=0)
 		{
 			seats[seat] = null;
-			transform.parent = null;
-			transform.position += getOffPos;
+			player.transform.parent = null;
+			player.transform.position += getOffPos;
 		}
 		return seat;
 		/*
@@ -145,7 +145,10 @@ public abstract class Carrier : NetworkBehaviour {
 		{
 			GetInput();
 			PushInput();
-			CmdFire(weaponFireBits);
+			if(Input.GetMouseButton(0))
+			{
+				CmdFire(1u);
+			}
 		}
 		Run();
 		if(driver==null)
@@ -174,7 +177,7 @@ public abstract class Carrier : NetworkBehaviour {
 	// 衰减（暂定driver离开后用。如果driver在的时候也用，应该是衰减速度快过同步速度会影响，否则不影响）
 	public abstract void Attenuate();
 
-	[Command]
+	[Command(ignoreAuthority=true)]
 	protected void CmdFire(uint fireBits)
 	{
 		ServerFire(fireBits);

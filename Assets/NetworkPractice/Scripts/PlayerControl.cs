@@ -115,16 +115,16 @@ public class PlayerControl : NetworkBehaviour {
 		}
 		if(seat>=0)
 		{
-			RpcGetOnCarrier(curCarrier.GetComponent<NetworkIdentity>().sceneId);
+			RpcGetOnCarrier(curCarrier.GetComponent<NetworkIdentity>().netId);
 		}
 	}
 	// RPC方法无法接受Carrier类型的参数，可能是无法接受复杂类型
 	[ClientRpc]
-	public void RpcGetOnCarrier(ulong carrierId)
+	public void RpcGetOnCarrier(uint carrierId)
 	{
 		if(isClient && !isServer)
 		{
-			GetOnCarrier(NetworkIdentity.GetSceneIdentity(carrierId).gameObject.GetComponent<Carrier>());
+			GetOnCarrier(NetworkIdentity.spawned[carrierId].gameObject.GetComponent<Carrier>());
 		}
 	}
 	public int GetOnCarrier(Carrier carrier)
@@ -140,7 +140,6 @@ public class PlayerControl : NetworkBehaviour {
 	[Command]
 	public void CmdGetOffCarrier()
 	{
-		print("CmdGetOffCarrier");
 		int seat = -1;
 		if(isServer)
 		{

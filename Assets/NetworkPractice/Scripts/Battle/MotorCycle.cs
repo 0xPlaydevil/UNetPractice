@@ -77,8 +77,8 @@ public class MotorCycle : Carrier {
     	if((fireBits &1u) ==1u)
     	{
     		// fire2
-    		NetworkServer.Spawn(PillManager.instance.Create(3,driver.gameObject,new Vector3(-0.3f,0.3f,0)));
-    		NetworkServer.Spawn(PillManager.instance.Create(3,driver.gameObject, new Vector3(0.3f,0.3f,0)));
+    		NetworkServer.Spawn(PillManager.instance.Create(3,driver.gameObject,new Vector3(-0.3f,0.3f,1)));
+    		NetworkServer.Spawn(PillManager.instance.Create(3,driver.gameObject, new Vector3(0.3f,0.3f,1)));
     	}
     }
 

@@ -556,7 +556,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  driver: {fileID: 0}
 --- !u!54 &1245357509
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -739,7 +738,12 @@ MonoBehaviour:
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 1999150011178678, guid: 0509b535e27fe2a429f778ef7f762991, type: 3}
+  - {fileID: 1999150011178678, guid: 62742fb25b54d61478b56a813335578d, type: 3}
+  - {fileID: 1999150011178678, guid: 8a3f7d7ce6adb664db96dcaeb2c6cf1a, type: 3}
+  - {fileID: 1999150011178678, guid: 4e4a9bc33a388ae4dbee30dc13cc4a1b, type: 3}
+  - {fileID: 1999150011178678, guid: fd687a0f58d07cf4e932b0dff539ff10, type: 3}
 --- !u!1 &2135999174
 GameObject:
   m_ObjectHideFlags: 0
@@ -884,7 +888,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  driver: {fileID: 0}
 --- !u!54 &2135999182
 Rigidbody:
   m_ObjectHideFlags: 0
